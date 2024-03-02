@@ -2,6 +2,7 @@
 #pragma once
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 class Game {
 public:
@@ -24,4 +25,5 @@ private:
     // (TEST ONLY)
     int rectX;
     int rectY;
+    SDL_Texture* imageTexture;
 };

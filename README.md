@@ -9,7 +9,7 @@ A game in C++ with SDL2.
 ### Install the dependencies
 	sudo apt update
 	sudo apt install g++
-	sudo apt-get install libsdl2-dev libsdl2-ttf-dev
+	sudo apt-get install libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev
 
 ### Compile and Run
 	make run

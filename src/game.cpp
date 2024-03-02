@@ -1,12 +1,12 @@
 // game.cpp
 #include "game.h"
 
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
+const int SCREEN_WIDTH = 1280;
+const int SCREEN_HEIGHT = 960;
 
 // (TEST ONLY)
-const int RECTANGLE_WIDTH = 50;
-const int RECTANGLE_HEIGHT = 50;
+const int RECTANGLE_WIDTH = 200;
+const int RECTANGLE_HEIGHT = 200;
 
 // (TEST ONLY)
 Game::Game() : window(nullptr),renderer(nullptr),
@@ -36,6 +36,18 @@ bool Game::init() {
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (renderer == nullptr) {
         printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
+        return false;
+    }
+
+    // (TEST ONLY)
+    SDL_Surface* loadedSurface = IMG_Load("/home/xemeds/Desktop/Dantes-Resurrection/assets/game_logo.png");
+    if (loadedSurface == nullptr) {
+        return false;
+    }
+
+    imageTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
+    SDL_FreeSurface(loadedSurface);
+    if (imageTexture == nullptr) {
         return false;
     }
 
@@ -86,13 +98,12 @@ void Game::update() {
 }
 
 void Game::render() {
-    SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+    SDL_SetRenderDrawColor(renderer, 0x0, 0x0, 0x0, 0x0);
     SDL_RenderClear(renderer);
 
     // (TEST ONLY)
     SDL_Rect rectangle = {rectX, rectY, RECTANGLE_WIDTH, RECTANGLE_HEIGHT};
-    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xFF, 0xFF);
-    SDL_RenderFillRect(renderer, &rectangle);
+    SDL_RenderCopy(renderer, imageTexture, nullptr, &rectangle);
 
     SDL_RenderPresent(renderer);
 }
