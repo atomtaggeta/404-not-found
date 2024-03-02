@@ -6,6 +6,8 @@ SRC_DIR = src
 OBJ_DIR = obj
 BIN_DIR = bin
 
+$(shell mkdir -p $(OBJ_DIR) $(BIN_DIR))
+
 SRC_FILES = $(wildcard $(SRC_DIR)/*.cpp)
 OBJ_FILES = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC_FILES))
 EXECUTABLE = $(BIN_DIR)/main
@@ -22,6 +24,6 @@ run: $(EXECUTABLE)
 	./$(EXECUTABLE)
 
 clean:
-	rm -rf $(OBJ_DIR)/*.o $(EXECUTABLE)
+	rm -rf $(OBJ_DIR) -rf $(BIN_DIR)
 
 .PHONY: all run clean
