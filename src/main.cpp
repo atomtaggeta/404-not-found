@@ -1,5 +1,6 @@
-// main.cpp
 #include "game.h"
+
+// https://github.com/aminosbh/sdl2-samples-and-projects
 
 int main() {
     Game game;

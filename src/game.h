@@ -1,8 +1,9 @@
-// game.h
-#pragma once
+#ifndef GAME_H
+#define GAME_H
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include "player.h"
 
 class Game {
 public:
@@ -13,17 +14,16 @@ public:
     void run();
 
 private:
-    SDL_Window* window;
-    SDL_Renderer* renderer;
+    SDL_Window* window = nullptr;
+    SDL_Renderer* renderer = nullptr;
+
+    bool running = true;
+
+    Player* player = nullptr;
 
     void input();
     void update();
     void render();
-
-    bool running = false;
-
-    // (TEST ONLY)
-    int rectX;
-    int rectY;
-    SDL_Texture* imageTexture;
 };
+
+#endif // GAME.H

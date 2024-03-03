@@ -1,18 +1,7 @@
-// game.cpp
 #include "game.h"
 
-const int SCREEN_WIDTH = 1280;
-const int SCREEN_HEIGHT = 960;
-
 // (TEST ONLY)
-const int RECTANGLE_WIDTH = 200;
-const int RECTANGLE_HEIGHT = 200;
-
-// (TEST ONLY)
-Game::Game() : window(nullptr),renderer(nullptr),
-rectX(SCREEN_WIDTH / 2 - RECTANGLE_WIDTH / 2),
-rectY(SCREEN_HEIGHT / 2 - RECTANGLE_HEIGHT / 2) {
-
+Game::Game() {
 }
 
 Game::~Game() {
@@ -27,7 +16,16 @@ bool Game::init() {
         return false;
     }
 
-    window = SDL_CreateWindow("SDL Rectangle Control", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    // Get the display mode of the primary monitor
+    SDL_DisplayMode displayMode;
+    if (SDL_GetCurrentDisplayMode(0, &displayMode) != 0) {
+        // Handle getting display mode error
+        printf("SDL could not get display dimensions! SDL_Error: %s\n", SDL_GetError());
+        return false;
+    }
+
+    // Create the windows using the monitors dimensions (fullscreen)
+    window = SDL_CreateWindow("Dante's Resurrection", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, displayMode.w, displayMode.h, SDL_WINDOW_FULLSCREEN);
     if (window == nullptr) {
         printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
         return false;
@@ -39,23 +37,13 @@ bool Game::init() {
         return false;
     }
 
-    // (TEST ONLY)
-    SDL_Surface* loadedSurface = IMG_Load("/home/xemeds/Desktop/Dantes-Resurrection/assets/game_logo.png");
-    if (loadedSurface == nullptr) {
-        return false;
-    }
-
-    imageTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
-    SDL_FreeSurface(loadedSurface);
-    if (imageTexture == nullptr) {
-        return false;
-    }
+    // Initialize the player object
+    player = new Player(renderer);
 
     return true;
 }
 
 void Game::run() {
-    running = true;
     while (running) {
         input();
         update();
@@ -72,38 +60,27 @@ void Game::input() {
             running = false;
             SDL_Quit();
             exit(0);
-
-        // (TEST ONLY)
-        } else if (e.type == SDL_KEYDOWN) {
-            switch (e.key.keysym.sym) {
-                case SDLK_w:
-                    rectY -= 5;
-                    break;
-                case SDLK_s:
-                    rectY += 5;
-                    break;
-                case SDLK_a:
-                    rectX -= 5;
-                    break;
-                case SDLK_d:
-                    rectX += 5;
-                    break;
-            }
         }
+
+        // Get the current key states
+        const Uint8* current_key_states = SDL_GetKeyboardState(NULL);
+
+        // Move the player accordingly
+        player->movement(current_key_states);
     }
 }
 
 void Game::update() {
-    // Update game state here (if needed)
+    // Update the player
+    player->update();
 }
 
 void Game::render() {
     SDL_SetRenderDrawColor(renderer, 0x0, 0x0, 0x0, 0x0);
     SDL_RenderClear(renderer);
 
-    // (TEST ONLY)
-    SDL_Rect rectangle = {rectX, rectY, RECTANGLE_WIDTH, RECTANGLE_HEIGHT};
-    SDL_RenderCopy(renderer, imageTexture, nullptr, &rectangle);
+    // Render the player object
+    player->render();
 
     SDL_RenderPresent(renderer);
 }
