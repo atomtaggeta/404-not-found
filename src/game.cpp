@@ -11,6 +11,7 @@ Game::~Game() {
 }
 
 bool Game::init() {
+    // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
         return false;
@@ -31,14 +32,18 @@ bool Game::init() {
         return false;
     }
 
+    // Create the renderer
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (renderer == nullptr) {
         printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
         return false;
     }
 
-    // Initialize the player object
-    player = new Player(renderer);
+    // Disable the cursor
+    SDL_ShowCursor(SDL_DISABLE);
+
+    // Initialize the player object (with starting position)
+    player = new Player(renderer, 100, displayMode.h - 100, displayMode.w, displayMode.h);
 
     return true;
 }
@@ -52,21 +57,18 @@ void Game::run() {
 }
 
 void Game::input() {
-    SDL_Event e;
-    while (SDL_PollEvent(&e) != 0) {
+    SDL_Event event;
+    while (SDL_PollEvent(&event) != 0) {
     	// If quit is detected
-        if (e.type == SDL_QUIT || (e.type == SDL_KEYDOWN && (e.key.keysym.sym == SDLK_ESCAPE || e.key.keysym.sym == SDLK_q))) {
+        if (event.type == SDL_QUIT || (event.type == SDL_KEYDOWN && (event.key.keysym.sym == SDLK_ESCAPE || event.key.keysym.sym == SDLK_q))) {
             // Quit the game
             running = false;
             SDL_Quit();
             exit(0);
         }
 
-        // Get the current key states
-        const Uint8* current_key_states = SDL_GetKeyboardState(NULL);
-
-        // Move the player accordingly
-        player->movement(current_key_states);
+        // Handle the input for the player
+        player->handle_input(event);
     }
 }
 

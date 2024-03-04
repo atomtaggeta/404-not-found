@@ -5,10 +5,10 @@
 
 class Player {
 public:
-    Player(SDL_Renderer* renderer);
+    Player(SDL_Renderer* renderer, const int x, const int y, const int SW, const int SH);
     ~Player();
 
-    void movement(const Uint8* current_key_states);
+    void handle_input(SDL_Event event);
     void update();
     void render();
 
@@ -16,16 +16,19 @@ private:
     SDL_Renderer* renderer;
     SDL_Rect rect;
 
+    const int SCREEN_WIDTH;
+    const int SCREEN_HEIGHT;
+    const int GROUND_LEVEL;
+
     const int WIDTH = 50;
     const int HEIGHT = 50;
-    int speed = 10;
-    const int STARTING_X = 100;
-    const int STARTING_Y = 1000;
+    int direction = 0;
+    float speed = 1.0f;
 
-    const int GROUND_LEVEL = 1000;
     bool jumping = false;
-    int jump_count = 0;
-    const int JUMP_HEIGHT = 100;
+    float jump_velocity = 0.0f;
+    float jump_strength = 2.5f;
+    float gravity = 0.01f;
 
     void jump();
 };
