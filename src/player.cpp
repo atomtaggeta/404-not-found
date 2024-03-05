@@ -1,8 +1,10 @@
 #include "player.h"
 
-Player::Player(SDL_Renderer* renderer, int x, int y, const float FPS, const int SW, const int SH) : renderer(renderer), FPS(FPS), SCREEN_WIDTH(SW), SCREEN_HEIGHT(SH),  GROUND_LEVEL(y) {
+Player::Player(SDL_Renderer* renderer, SDL_Texture* texture, int x, int y, const float FPS, const int SW, const int SH):
+renderer(renderer), texture(texture), FPS(FPS), SCREEN_WIDTH(SW), SCREEN_HEIGHT(SH) {
+    GROUND_LEVEL = y - HEIGHT;
     rect.x = x;
-    rect.y = y;
+    rect.y = y - HEIGHT;
     rect.w = WIDTH;
     rect.h = HEIGHT;
 }
@@ -19,7 +21,7 @@ void Player::handle_input(SDL_Event event) {
             case SDLK_d:
                 direction = 1;
                 break;
-            case SDLK_w:
+            case SDLK_SPACE:
                 if (!jumping) {
                     jumping = true;
                     jump_velocity = -jump_strength / FPS;
@@ -74,6 +76,5 @@ void Player::update() {
 }
 
 void Player::render() {
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderFillRect(renderer, &rect);
+    SDL_RenderCopy(renderer, texture, NULL, &rect);
 }

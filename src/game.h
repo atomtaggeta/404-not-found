@@ -3,6 +3,8 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+
+#include "textures.h"
 #include "player.h"
 
 class Game {
@@ -16,6 +18,8 @@ public:
 private:
     SDL_Window* window = nullptr;
     SDL_Renderer* renderer = nullptr;
+
+    Textures* textures = nullptr;
 
     const float FPS = 60.0;
     int SCREEN_WIDTH;

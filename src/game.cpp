@@ -1,12 +1,19 @@
 #include "game.h"
 
-// (TEST ONLY)
 Game::Game() {
 }
 
 Game::~Game() {
+    // Deload all the textures
+    textures->deload();
+    delete textures;
+
+    // Delete the player
+    delete player;
+
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    IMG_Quit();
     SDL_Quit();
 }
 
@@ -17,16 +24,23 @@ bool Game::init() {
         return false;
     }
 
+
+    // Initialize SDL_image
+    if (!(IMG_Init(IMG_INIT_TIF) & IMG_INIT_TIF)) {
+        printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
+        return 1;
+    }
+
     // Get the display mode of the primary monitor
-    SDL_DisplayMode displayMode;
-    if (SDL_GetCurrentDisplayMode(0, &displayMode) != 0) {
+    SDL_DisplayMode display_mode;
+    if (SDL_GetCurrentDisplayMode(0, &display_mode) != 0) {
         // Handle getting display mode error
         printf("SDL could not get display dimensions! SDL_Error: %s\n", SDL_GetError());
         return false;
     }
 
-    //SCREEN_WIDTH = displayMode.w;
-    //SCREEN_HEIGHT = displayMode.h;
+    //SCREEN_WIDTH = display_mode.w;
+    //SCREEN_HEIGHT = display_mode.h;
     SCREEN_WIDTH = 1000;
     SCREEN_HEIGHT = 800;
 
@@ -44,11 +58,17 @@ bool Game::init() {
         return false;
     }
 
+    // Load all the textures (exit if there is an error loading a texture)
+    textures = new Textures(renderer);
+    if (!textures->load()) {
+        running = false;
+    }
+
     // Disable the cursor
     SDL_ShowCursor(SDL_DISABLE);
 
     // Initialize the player object (with starting position)
-    player = new Player(renderer, 100, SCREEN_HEIGHT - 100, FPS, SCREEN_WIDTH, SCREEN_HEIGHT);
+    player = new Player(renderer, textures->player, 100, SCREEN_HEIGHT - 100, FPS, SCREEN_WIDTH, SCREEN_HEIGHT);
 
     return true;
 }
@@ -85,8 +105,6 @@ void Game::input() {
         if (event.type == SDL_QUIT || (event.type == SDL_KEYDOWN && (event.key.keysym.sym == SDLK_ESCAPE || event.key.keysym.sym == SDLK_q))) {
             // Quit the game
             running = false;
-            SDL_Quit();
-            exit(0);
         }
 
         // Handle the input for the player
@@ -100,7 +118,7 @@ void Game::update() {
 }
 
 void Game::render() {
-    SDL_SetRenderDrawColor(renderer, 0x0, 0x0, 0x0, 0x0);
+    //SDL_SetRenderDrawColor(renderer, 0x0, 0x0, 0x0, 0x0);
     SDL_RenderClear(renderer);
 
     // Render the player object
