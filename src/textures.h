@@ -19,7 +19,7 @@ private:
 
     SDL_Texture* load_texture(SDL_Renderer* renderer, const char* file_path);
 
-    const char* PLAYER_PATH = "assets/characters/player/120x80_gifs/__Idle.gif";
+    const char* PLAYER_PATH = "assets/characters/player/idle.png";
 };
 
 #endif // TEXTURES_H

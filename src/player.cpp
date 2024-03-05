@@ -1,5 +1,6 @@
 #include "player.h"
 
+
 Player::Player(SDL_Renderer* renderer, SDL_Texture* texture, int x, int y, const float FPS, const int SW, const int SH):
 renderer(renderer), texture(texture), FPS(FPS), SCREEN_WIDTH(SW), SCREEN_HEIGHT(SH) {
     GROUND_LEVEL = y - HEIGHT;
@@ -7,9 +8,21 @@ renderer(renderer), texture(texture), FPS(FPS), SCREEN_WIDTH(SW), SCREEN_HEIGHT(
     rect.y = y - HEIGHT;
     rect.w = WIDTH;
     rect.h = HEIGHT;
+
+    frame_rects = new SDL_Rect[NUM_FRAMES];
+
+    for (int i = 0; i < NUM_FRAMES; i++) {
+        frame_rects[i].x = i * FRAME_WIDTH;
+        frame_rects[i].y = 0;
+        frame_rects[i].w = FRAME_WIDTH;
+        frame_rects[i].h = FRAME_HEIGHT;
+    }
+
+    frame_start = SDL_GetTicks();
 }
 
 Player::~Player() {
+    delete frame_rects;
 }
 
 void Player::handle_input(SDL_Event event) {
@@ -73,8 +86,13 @@ void Player::update() {
     if (!jumping) {
         jump_velocity = 0;
     }
+
+    if ((SDL_GetTicks() - frame_start) > (FPS / 3.0)) {
+        current_frame = (current_frame + 1) % NUM_FRAMES;
+        frame_start = SDL_GetTicks();
+    }
 }
 
 void Player::render() {
-    SDL_RenderCopy(renderer, texture, NULL, &rect);
+    SDL_RenderCopy(renderer, texture, &frame_rects[current_frame], &rect);
 }

@@ -34,6 +34,14 @@ private:
 
     SDL_Texture* texture = nullptr;
 
+    const int FRAME_WIDTH = 120;
+    const int FRAME_HEIGHT = 80;
+    const int NUM_FRAMES = 10;
+    int current_frame;
+
+    SDL_Rect* frame_rects;
+    Uint32 frame_start;
+
     void jump();
 };
 

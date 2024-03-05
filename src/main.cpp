@@ -11,7 +11,5 @@ int main() {
 
     game.run();
 
-    // TODO: MOVE SIMPLE GAME LOGIC HERE
-
     return 0;
 }
