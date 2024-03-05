@@ -23,12 +23,12 @@ private:
     const int WIDTH = 50;
     const int HEIGHT = 50;
     int direction = 0;
-    float speed = 1.0f;
+    float speed = 7.5;
 
     bool jumping = false;
-    float jump_velocity = 0.0f;
-    float jump_strength = 2.5f;
-    float gravity = 0.01f;
+    float jump_velocity = 0.0;
+    const float jump_strength = 7.5;
+    const float gravity = 0.2;
 
     void jump();
 };

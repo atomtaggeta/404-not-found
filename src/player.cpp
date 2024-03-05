@@ -45,7 +45,9 @@ void Player::handle_input(SDL_Event event) {
 
 void Player::update() {
     // Move the player left and right
-    rect.x += direction * speed;
+    if (direction) {
+        rect.x += direction * speed;
+    }
 
     // Ensure player stays within the screen boundaries
     if (rect.x < 0) {
@@ -55,8 +57,10 @@ void Player::update() {
     }
 
     // Control the jump of the player
-    rect.y += jump_velocity;
-    jump_velocity += gravity;
+    if (jumping) {
+        rect.y += jump_velocity;
+        jump_velocity += gravity;
+    }
 
     if (rect.y > GROUND_LEVEL) {
         rect.y = GROUND_LEVEL;
@@ -64,6 +68,9 @@ void Player::update() {
         jumping = false;
     }
 
+    if (!jumping) {
+        jump_velocity = 0;
+    }
 }
 
 void Player::render() {

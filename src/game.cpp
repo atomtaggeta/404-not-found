@@ -25,8 +25,13 @@ bool Game::init() {
         return false;
     }
 
-    // Create the windows using the monitors dimensions (fullscreen)
-    window = SDL_CreateWindow("Dante's Resurrection", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, displayMode.w, displayMode.h, SDL_WINDOW_FULLSCREEN);
+    //SCREEN_WIDTH = displayMode.w;
+    //SCREEN_HEIGHT = displayMode.h;
+    SCREEN_WIDTH = 1000;
+    SCREEN_HEIGHT = 800;
+
+    // Create the windows using the monitors dimensions (fullscreen) FOR RELEASE: SDL_WINDOW_FULLSCREEN
+    window = SDL_CreateWindow("Dante's Resurrection", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (window == nullptr) {
         printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
         return false;
@@ -43,16 +48,33 @@ bool Game::init() {
     SDL_ShowCursor(SDL_DISABLE);
 
     // Initialize the player object (with starting position)
-    player = new Player(renderer, 100, displayMode.h - 100, displayMode.w, displayMode.h);
+    player = new Player(renderer, 100, SCREEN_HEIGHT - 100, SCREEN_WIDTH, SCREEN_HEIGHT);
 
     return true;
 }
 
 void Game::run() {
+    // Initialize the FPS handlers
+    Uint32 frame_start;
+    int frame_time;
+
     while (running) {
+        // Get the current time
+        frame_start = SDL_GetTicks();
+
+        // Handle the input
         input();
+
+        // Update the game logic
         update();
+        // Render
         render();
+
+        // Control the frame rate
+        frame_time = SDL_GetTicks() - frame_start;
+        if (1000 / FPS > frame_time) {
+            SDL_Delay(1000 / FPS - frame_time);
+        }
     }
 }
 

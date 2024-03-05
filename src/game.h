@@ -17,6 +17,10 @@ private:
     SDL_Window* window = nullptr;
     SDL_Renderer* renderer = nullptr;
 
+    int SCREEN_WIDTH;
+    int SCREEN_HEIGHT;
+    const int FPS = 60;
+
     bool running = true;
 
     Player* player = nullptr;
