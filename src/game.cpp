@@ -48,7 +48,7 @@ bool Game::init() {
     SDL_ShowCursor(SDL_DISABLE);
 
     // Initialize the player object (with starting position)
-    player = new Player(renderer, 100, SCREEN_HEIGHT - 100, SCREEN_WIDTH, SCREEN_HEIGHT);
+    player = new Player(renderer, 100, SCREEN_HEIGHT - 100, FPS, SCREEN_WIDTH, SCREEN_HEIGHT);
 
     return true;
 }

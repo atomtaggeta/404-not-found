@@ -1,6 +1,6 @@
 #include "player.h"
 
-Player::Player(SDL_Renderer* renderer, int x, int y, const int SW, const int SH) : renderer(renderer), GROUND_LEVEL(y), SCREEN_WIDTH(SW), SCREEN_HEIGHT(SH) {
+Player::Player(SDL_Renderer* renderer, int x, int y, const float FPS, const int SW, const int SH) : renderer(renderer), FPS(FPS), SCREEN_WIDTH(SW), SCREEN_HEIGHT(SH),  GROUND_LEVEL(y) {
     rect.x = x;
     rect.y = y;
     rect.w = WIDTH;
@@ -22,7 +22,7 @@ void Player::handle_input(SDL_Event event) {
             case SDLK_w:
                 if (!jumping) {
                     jumping = true;
-                    jump_velocity = -jump_strength;
+                    jump_velocity = -jump_strength / FPS;
                 }
                 break;
         }
@@ -46,7 +46,7 @@ void Player::handle_input(SDL_Event event) {
 void Player::update() {
     // Move the player left and right
     if (direction) {
-        rect.x += direction * speed;
+        rect.x += direction * speed / FPS;
     }
 
     // Ensure player stays within the screen boundaries
@@ -59,7 +59,7 @@ void Player::update() {
     // Control the jump of the player
     if (jumping) {
         rect.y += jump_velocity;
-        jump_velocity += gravity;
+        jump_velocity += gravity / FPS;
     }
 
     if (rect.y > GROUND_LEVEL) {
