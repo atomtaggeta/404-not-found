@@ -7,13 +7,16 @@
 struct Frames {
     SDL_Texture* texture;
     SDL_Rect* frame_rects;
+
+    int num_of_frames;
 };
 
 struct Texture {
     struct Frames idle;
     struct Frames run;
+    struct Frames jump_up;
+    struct Frames jump_down;
 
-    int num_of_frames;
     int current_frame;
     Uint32 frame_start;
     float render_speed;
@@ -36,12 +39,17 @@ private:
 
     const char* PLAYER_IDLE_PATH = "assets/characters/player/idle.png";
     const char* PLAYER_RUN_PATH = "assets/characters/player/run.png";
+    const char* PLAYER_JUMP_UP_PATH = "assets/characters/player/jump_up.png";
+    const char* PLAYER_JUMP_DOWN_PATH = "assets/characters/player/jump_down.png";
+
+    const int PLAYER_IDLE_FRAMES = 10;
+    const int PLAYER_RUN_FRAMES = 10;
+    const int PLAYER_JUMP_FRAMES = 3;
 
     const float PLAYER_RENDER_SPEED = 1.5;
 
     const int PLAYER_WIDTH = 120;
     const int PLAYER_HEIGHT = 80;
-    const int PLAYER_FRAMES = 10;
 };
 
 #endif // TEXTURES_H

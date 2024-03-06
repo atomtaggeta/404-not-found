@@ -61,6 +61,14 @@ void Player::update() {
         state = IDLE;
     }
 
+    // Set the jumping states
+    if (jump_velocity < 0) {
+        state = JUMP_UP;
+    }
+    else if (jump_velocity > 0) {
+        state = JUMP_DOWN;
+    }
+
     // Ensure player stays within the screen boundaries
     if (rect.x < 0) {
         rect.x = 0;
@@ -86,15 +94,30 @@ void Player::update() {
         jump_velocity = 0;
     }
 
-    // If enough time has passed between frames, switch to the next frame
-    if ((SDL_GetTicks() - texture.frame_start) > (FPS / texture.render_speed)) {
-        texture.current_frame = (texture.current_frame + 1) % texture.num_of_frames;
-        texture.frame_start = SDL_GetTicks();
-    }
-
     // Set the looking direction
     if (moving_direction) {
         looking_direction = moving_direction;
+    }
+
+    // Get the number of frames for the players states animation
+    int num_of_frames;
+    if (state == IDLE) {
+        num_of_frames = texture.idle.num_of_frames;
+    }
+    else if (state == RUN) {
+        num_of_frames = texture.run.num_of_frames;
+    }
+    else if (state == JUMP_UP) {
+        num_of_frames = texture.jump_up.num_of_frames;
+    }
+    else if (state == JUMP_DOWN) {
+        num_of_frames = texture.jump_down.num_of_frames;
+    }
+
+    // If enough time has passed between frames, switch to the next frame
+    if ((SDL_GetTicks() - texture.frame_start) > (FPS / texture.render_speed)) {
+        texture.current_frame = (texture.current_frame + 1) % num_of_frames;
+        texture.frame_start = SDL_GetTicks();
     }
 }
 
@@ -112,6 +135,14 @@ void Player::render() {
     else if (state == RUN) {
         render_texture = texture.run.texture;
         render_rect = &texture.run.frame_rects[texture.current_frame];
+    }
+    else if (state == JUMP_UP) {
+        render_texture = texture.jump_up.texture;
+        render_rect = &texture.jump_up.frame_rects[texture.current_frame];
+    }
+    else if (state == JUMP_DOWN) {
+        render_texture = texture.jump_down.texture;
+        render_rect = &texture.jump_down.frame_rects[texture.current_frame];
     }
 
     // Render the current frame
