@@ -19,19 +19,33 @@ SDL_Texture* Textures::load_texture(SDL_Renderer* renderer, const char* file_pat
 
 // Load all the textures
 bool Textures::load() {
-	// Player texture
-	player.texture = load_texture(renderer, PLAYER_IDLE_PATH);
-	if (!player.texture) { return false; }
+	// Player idle texture
+	player.idle.texture = load_texture(renderer, PLAYER_IDLE_PATH);
+	if (!player.idle.texture) { return false; }
 
-	player.frame_rects = new SDL_Rect[PLAYER_FRAMES];
+	player.idle.frame_rects = new SDL_Rect[PLAYER_FRAMES];
 
     for (int i = 0; i < PLAYER_FRAMES; i++) {
-        player.frame_rects[i].x = i * PLAYER_WIDTH;
-        player.frame_rects[i].y = 0;
-        player.frame_rects[i].w = PLAYER_WIDTH;
-        player.frame_rects[i].h = PLAYER_HEIGHT;
+        player.idle.frame_rects[i].x = i * PLAYER_WIDTH;
+        player.idle.frame_rects[i].y = 0;
+        player.idle.frame_rects[i].w = PLAYER_WIDTH;
+        player.idle.frame_rects[i].h = PLAYER_HEIGHT;
     }
 
+    // Player run texture
+	player.run.texture = load_texture(renderer, PLAYER_RUN_PATH);
+	if (!player.run.texture) { return false; }
+
+	player.run.frame_rects = new SDL_Rect[PLAYER_FRAMES];
+
+    for (int i = 0; i < PLAYER_FRAMES; i++) {
+        player.run.frame_rects[i].x = i * PLAYER_WIDTH;
+        player.run.frame_rects[i].y = 0;
+        player.run.frame_rects[i].w = PLAYER_WIDTH;
+        player.run.frame_rects[i].h = PLAYER_HEIGHT;
+    }
+
+    // Set the players texture values
     player.num_of_frames = PLAYER_FRAMES;
     player.current_frame = 1;
     player.frame_start = SDL_GetTicks();
@@ -43,8 +57,8 @@ bool Textures::load() {
 // Deload all the textures
 bool Textures::deload() {
 	// Player texture
-	SDL_DestroyTexture(player.texture);
-	delete player.frame_rects;
+	SDL_DestroyTexture(player.idle.texture);
+	delete player.idle.frame_rects;
 
 	return true;
 }
