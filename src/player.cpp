@@ -1,28 +1,16 @@
 #include "player.h"
 
 
-Player::Player(SDL_Renderer* renderer, SDL_Texture* texture, int x, int y, const float FPS, const int SW, const int SH):
+Player::Player(SDL_Renderer* renderer, struct Texture texture, int x, int y, const float FPS, const int SW, const int SH):
 renderer(renderer), texture(texture), FPS(FPS), SCREEN_WIDTH(SW), SCREEN_HEIGHT(SH) {
     GROUND_LEVEL = y - HEIGHT;
     rect.x = x;
     rect.y = y - HEIGHT;
     rect.w = WIDTH;
     rect.h = HEIGHT;
-
-    frame_rects = new SDL_Rect[NUM_FRAMES];
-
-    for (int i = 0; i < NUM_FRAMES; i++) {
-        frame_rects[i].x = i * FRAME_WIDTH;
-        frame_rects[i].y = 0;
-        frame_rects[i].w = FRAME_WIDTH;
-        frame_rects[i].h = FRAME_HEIGHT;
-    }
-
-    frame_start = SDL_GetTicks();
 }
 
 Player::~Player() {
-    delete frame_rects;
 }
 
 void Player::handle_input(SDL_Event event) {
@@ -87,12 +75,12 @@ void Player::update() {
         jump_velocity = 0;
     }
 
-    if ((SDL_GetTicks() - frame_start) > (FPS / 3.0)) {
-        current_frame = (current_frame + 1) % NUM_FRAMES;
-        frame_start = SDL_GetTicks();
+    if ((SDL_GetTicks() - texture.frame_start) > (FPS / texture.render_speed)) {
+        texture.current_frame = (texture.current_frame + 1) % texture.num_of_frames;
+        texture.frame_start = SDL_GetTicks();
     }
 }
 
 void Player::render() {
-    SDL_RenderCopy(renderer, texture, &frame_rects[current_frame], &rect);
+    SDL_RenderCopy(renderer, texture.texture, &texture.frame_rects[texture.current_frame], &rect);
 }

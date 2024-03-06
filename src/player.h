@@ -4,9 +4,11 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
+#include "textures.h"
+
 class Player {
 public:
-    Player(SDL_Renderer* renderer, SDL_Texture* texture, const int x, const int y, const float FPS, const int SW, const int SH);
+    Player(SDL_Renderer* renderer, struct Texture texture, const int x, const int y, const float FPS, const int SW, const int SH);
     ~Player();
 
     void handle_input(SDL_Event event);
@@ -17,7 +19,7 @@ private:
     SDL_Renderer* renderer;
     SDL_Rect rect;
 
-    const int FPS;
+    const float FPS;
     const int SCREEN_WIDTH;
     const int SCREEN_HEIGHT;
     int GROUND_LEVEL;
@@ -32,15 +34,7 @@ private:
     const float jump_strength = FPS * 8.0;
     const float gravity = FPS * 0.25;
 
-    SDL_Texture* texture = nullptr;
-
-    const int FRAME_WIDTH = 120;
-    const int FRAME_HEIGHT = 80;
-    const int NUM_FRAMES = 10;
-    int current_frame;
-
-    SDL_Rect* frame_rects;
-    Uint32 frame_start;
+    struct Texture texture;
 
     void jump();
 };
