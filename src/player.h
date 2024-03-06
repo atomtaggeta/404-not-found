@@ -33,20 +33,18 @@ private:
     const int SCREEN_HEIGHT;
     int GROUND_LEVEL;
 
-    const int WIDTH = 240;
-    const int HEIGHT = 160;
-    int moving_direction = 0;
+    const int WIDTH = 360;
+    const int HEIGHT = 240;
+    int direction_X = 0;
     float speed = FPS * 10.0;
-
     bool jumping = false;
-    float jump_velocity = 0.0;
+    float vel_Y = 0.0;
     const float jump_strength = FPS * 8.0;
     const float gravity = FPS * 0.25;
+    int jump_count = 0;
 
     struct Texture texture;
     int looking_direction = 1;
-
-    void jump();
 };
 
 #endif // PLAYER_H

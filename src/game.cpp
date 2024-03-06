@@ -118,8 +118,11 @@ void Game::update() {
 }
 
 void Game::render() {
-    //SDL_SetRenderDrawColor(renderer, 0x0, 0x0, 0x0, 0x0);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
+
+    // TEST FOR HITBOXES
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
     // Render the player object
     player->render();

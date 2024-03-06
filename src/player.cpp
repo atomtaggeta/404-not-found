@@ -17,15 +17,16 @@ void Player::handle_input(SDL_Event event) {
     if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
         switch (event.key.keysym.sym) {
             case SDLK_a:
-                moving_direction = -1;
+                direction_X = -1;
                 break;
             case SDLK_d:
-                moving_direction = 1;
+                direction_X = 1;
                 break;
             case SDLK_SPACE:
-                if (!jumping) {
+                if (jump_count < 2) {
                     jumping = true;
-                    jump_velocity = -jump_strength / FPS;
+                    jump_count++;
+                    vel_Y = -jump_strength / FPS;
                 }
                 break;
         }
@@ -33,13 +34,13 @@ void Player::handle_input(SDL_Event event) {
     else if (event.type == SDL_KEYUP) {
         switch (event.key.keysym.sym) {
             case SDLK_a:
-                if (moving_direction == -1) {
-                    moving_direction = 0;
+                if (direction_X == -1) {
+                    direction_X = 0;
                 }
                 break;
             case SDLK_d:
-                if (moving_direction == 1) {
-                    moving_direction = 0;
+                if (direction_X == 1) {
+                    direction_X = 0;
                 }
                 break;
         }
@@ -47,26 +48,10 @@ void Player::handle_input(SDL_Event event) {
 }
 
 void Player::update() {
-    // If there is a moving direction
-    if (moving_direction) {
+    // If there is a X moving direction
+    if (direction_X) {
         // Move the player left and right
-        rect.x += moving_direction * speed / FPS;
-
-        // Set the state to run
-        state = RUN;
-    }
-    // If there is no moving direction
-    else {
-        // Set the state to idle
-        state = IDLE;
-    }
-
-    // Set the jumping states
-    if (jump_velocity < 0) {
-        state = JUMP_UP;
-    }
-    else if (jump_velocity > 0) {
-        state = JUMP_DOWN;
+        rect.x += direction_X * speed / FPS;
     }
 
     // Ensure player stays within the screen boundaries
@@ -78,45 +63,60 @@ void Player::update() {
 
     // Control the jump of the player
     if (jumping) {
-        rect.y += jump_velocity;
-        jump_velocity += gravity / FPS;
+        rect.y += vel_Y;
+        vel_Y += gravity / FPS;
     }
 
     // Bound the player to the gound
     if (rect.y > GROUND_LEVEL) {
         rect.y = GROUND_LEVEL;
-        jump_velocity = 0;
+        vel_Y = 0;
         jumping = false;
+        jump_count = 0;
     }
 
-    // So velocity doesnt get bigger over time
+    // So Y velocity doesnt get bigger over time
     if (!jumping) {
-        jump_velocity = 0;
+        vel_Y = 0;
+    }
+
+    // Set the player states
+    if (vel_Y < 0) {
+        state = JUMP_UP;
+    }
+    else if (vel_Y > 0) {
+        state = JUMP_DOWN;
+    }
+    else if (direction_X) {
+        state = RUN;
+    }
+    else {
+        // Set the state to idle
+        state = IDLE;
     }
 
     // Set the looking direction
-    if (moving_direction) {
-        looking_direction = moving_direction;
+    if (direction_X) {
+        looking_direction = direction_X;
     }
 
-    // Get the number of frames for the players states animation
-    int num_of_frames;
-    if (state == IDLE) {
-        num_of_frames = texture.idle.num_of_frames;
-    }
-    else if (state == RUN) {
-        num_of_frames = texture.run.num_of_frames;
-    }
-    else if (state == JUMP_UP) {
-        num_of_frames = texture.jump_up.num_of_frames;
-    }
-    else if (state == JUMP_DOWN) {
-        num_of_frames = texture.jump_down.num_of_frames;
-    }
-
-    // If enough time has passed between frames, switch to the next frame
+    // If enough time has passed between frames
     if ((SDL_GetTicks() - texture.frame_start) > (FPS / texture.render_speed)) {
-        texture.current_frame = (texture.current_frame + 1) % num_of_frames;
+        // Update the specific state animations current frame
+        if (state == IDLE) {
+            texture.idle.current_frame = (texture.idle.current_frame + 1) % texture.idle.num_of_frames;
+        }
+        else if (state == RUN) {
+            texture.run.current_frame = (texture.run.current_frame + 1) % texture.run.num_of_frames;
+        }
+        else if (state == JUMP_UP) {
+            texture.jump_up.current_frame = (texture.jump_up.current_frame + 1) % texture.jump_up.num_of_frames;
+        }
+        else if (state == JUMP_DOWN) {
+            texture.jump_down.current_frame = (texture.jump_down.current_frame + 1) % texture.jump_down.num_of_frames;
+        }
+        
+        // Get the frame start again
         texture.frame_start = SDL_GetTicks();
     }
 }
@@ -130,23 +130,26 @@ void Player::render() {
     SDL_Rect* render_rect;
     if (state == IDLE) {
         render_texture = texture.idle.texture;
-        render_rect = &texture.idle.frame_rects[texture.current_frame];
+        render_rect = &texture.idle.frame_rects[texture.idle.current_frame];
     }
     else if (state == RUN) {
         render_texture = texture.run.texture;
-        render_rect = &texture.run.frame_rects[texture.current_frame];
+        render_rect = &texture.run.frame_rects[texture.run.current_frame];
     }
     else if (state == JUMP_UP) {
         render_texture = texture.jump_up.texture;
-        render_rect = &texture.jump_up.frame_rects[texture.current_frame];
+        render_rect = &texture.jump_up.frame_rects[texture.jump_up.current_frame];
     }
     else if (state == JUMP_DOWN) {
         render_texture = texture.jump_down.texture;
-        render_rect = &texture.jump_down.frame_rects[texture.current_frame];
+        render_rect = &texture.jump_down.frame_rects[texture.jump_down.current_frame];
     }
 
     // Render the current frame
     SDL_RenderCopyEx(renderer, render_texture, render_rect, &rect, 0, nullptr, flip);
+
+    // TEST FOR HITBOXES
+    SDL_RenderDrawRect(renderer, &rect);
     
     //SDL_RenderCopy(renderer, texture.texture, &texture.idle.frame_rects[texture.current_frame], &rect);
 }

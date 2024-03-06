@@ -33,6 +33,7 @@ bool Textures::load() {
     }
 
     player.idle.num_of_frames = PLAYER_IDLE_FRAMES;
+    player.idle.current_frame = 1;
 
     // Player run texture
 	player.run.texture = load_texture(renderer, PLAYER_RUN_PATH);
@@ -48,6 +49,7 @@ bool Textures::load() {
     }
 
     player.run.num_of_frames = PLAYER_RUN_FRAMES;
+    player.run.current_frame = 1;
 
     // Player jump up and down texture
 	player.jump_up.texture = load_texture(renderer, PLAYER_JUMP_UP_PATH);
@@ -77,8 +79,10 @@ bool Textures::load() {
     player.jump_up.num_of_frames = PLAYER_JUMP_FRAMES;
     player.jump_down.num_of_frames = PLAYER_JUMP_FRAMES;
 
-    // Set the players texture values
-    player.current_frame = 1;
+    player.jump_up.current_frame = 1;
+    player.jump_down.current_frame = 1;
+
+    // Set the players general texture values
     player.frame_start = SDL_GetTicks();
     player.render_speed = PLAYER_RENDER_SPEED;
 

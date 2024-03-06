@@ -8,6 +8,7 @@ struct Frames {
     SDL_Texture* texture;
     SDL_Rect* frame_rects;
 
+    int current_frame;
     int num_of_frames;
 };
 
@@ -17,7 +18,6 @@ struct Texture {
     struct Frames jump_up;
     struct Frames jump_down;
 
-    int current_frame;
     Uint32 frame_start;
     float render_speed;
 };
