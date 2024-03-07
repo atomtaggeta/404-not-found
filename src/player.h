@@ -11,6 +11,7 @@ enum Player_State {
     RUN,
     JUMP_UP,
     JUMP_DOWN,
+    ATTACK
 };
 
 class Player {

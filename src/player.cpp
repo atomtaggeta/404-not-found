@@ -22,12 +22,15 @@ void Player::handle_input(SDL_Event event) {
             case SDLK_d:
                 direction_X = 1;
                 break;
-            case SDLK_SPACE:
+            case SDLK_w:
                 if (jump_count < 2) {
                     jumping = true;
                     jump_count++;
                     vel_Y = -jump_strength / FPS;
                 }
+                break;
+            case SDLK_0:
+                state = ATTACK;
                 break;
         }
     }
@@ -42,6 +45,9 @@ void Player::handle_input(SDL_Event event) {
                 if (direction_X == 1) {
                     direction_X = 0;
                 }
+                break;
+            case SDLK_0:
+                state = IDLE;
                 break;
         }
     }
@@ -80,44 +86,94 @@ void Player::update() {
         vel_Y = 0;
     }
 
-    // Set the player states
-    if (vel_Y < 0) {
-        state = JUMP_UP;
+    // Set the player states other than attack
+    if (state != ATTACK) {
+        if (vel_Y < 0) {
+            state = JUMP_UP;
+        }
+        else if (vel_Y > 0) {
+            state = JUMP_DOWN;
+        }
+        else if (direction_X) {
+            state = RUN;
+        }
+        else {
+            state = IDLE;
+        }
     }
-    else if (vel_Y > 0) {
-        state = JUMP_DOWN;
+
+
+    // TEST ONLY
+    if (state == IDLE) {
+        printf("IDLE\n");
     }
-    else if (direction_X) {
-        state = RUN;
+    else if (state == RUN) {
+        printf("RUN\n");
     }
-    else {
-        // Set the state to idle
-        state = IDLE;
+    else if (state == ATTACK) {
+        printf("ATTACK\n");
     }
+    else if (state == JUMP_UP) {
+        printf("JUMP_UP\n");
+    }
+    else if (state == JUMP_DOWN) {
+        printf("JUMP_DOWN\n");
+    }
+
 
     // Set the looking direction
     if (direction_X) {
         looking_direction = direction_X;
     }
 
+    // Get the last frames start time and the render speed it should have
+    Uint32 frame_start;
+    float render_speed;
+    if (state == IDLE) {
+        frame_start = texture.idle.frame_start;
+        render_speed = texture.idle.render_speed;
+    }
+    else if (state == RUN) {
+        frame_start = texture.run.frame_start;
+        render_speed = texture.run.render_speed;
+    }
+    else if (state == JUMP_UP) {
+        frame_start = texture.jump_up.frame_start;
+        render_speed = texture.jump_up.render_speed;
+    }
+    else if (state == JUMP_DOWN) {
+        frame_start = texture.jump_down.frame_start;
+        render_speed = texture.jump_down.render_speed;
+    }
+    else if (state == ATTACK) {
+        frame_start = texture.attack.frame_start;
+        render_speed = texture.attack.render_speed;
+    }
+
     // If enough time has passed between frames
-    if ((SDL_GetTicks() - texture.frame_start) > (FPS / texture.render_speed)) {
-        // Update the specific state animations current frame
+    if ((SDL_GetTicks() - frame_start) > (FPS / render_speed)) {
+        // Update the specific state animations current frame and update frame start time
         if (state == IDLE) {
             texture.idle.current_frame = (texture.idle.current_frame + 1) % texture.idle.num_of_frames;
+            texture.idle.frame_start = SDL_GetTicks();
         }
         else if (state == RUN) {
             texture.run.current_frame = (texture.run.current_frame + 1) % texture.run.num_of_frames;
+            texture.run.frame_start = SDL_GetTicks();
         }
         else if (state == JUMP_UP) {
             texture.jump_up.current_frame = (texture.jump_up.current_frame + 1) % texture.jump_up.num_of_frames;
+            texture.jump_up.frame_start = SDL_GetTicks();
         }
         else if (state == JUMP_DOWN) {
             texture.jump_down.current_frame = (texture.jump_down.current_frame + 1) % texture.jump_down.num_of_frames;
+            texture.jump_down.frame_start = SDL_GetTicks();
+        }
+        else if (state == ATTACK) {
+            texture.attack.current_frame = (texture.attack.current_frame + 1) % texture.attack.num_of_frames;
+            texture.attack.frame_start = SDL_GetTicks();
         }
         
-        // Get the frame start again
-        texture.frame_start = SDL_GetTicks();
     }
 }
 
@@ -143,6 +199,10 @@ void Player::render() {
     else if (state == JUMP_DOWN) {
         render_texture = texture.jump_down.texture;
         render_rect = &texture.jump_down.frame_rects[texture.jump_down.current_frame];
+    }
+    else if (state == ATTACK) {
+        render_texture = texture.attack.texture;
+        render_rect = &texture.attack.frame_rects[texture.attack.current_frame];
     }
 
     // Render the current frame
